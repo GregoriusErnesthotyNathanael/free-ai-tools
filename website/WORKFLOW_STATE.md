@@ -51,10 +51,24 @@ NEXT (belum dikerjakan, butuh keputusan):
 1. **Push belum dilakukan.** `origin` = `ShaikhWarsi/free-ai-tools` (repo orang lain,
    publik) — jangan push ke sana. Target yang benar `myfork`
    (`GregoriusErnesthotyNathanael/free-ai-tools`).
-2. **Warning `next build`**: Next menebak workspace root = `/home/grego` karena ada
-   `/home/grego/package-lock.json`, bukan `website/`. Bukan error, tapi root salah bisa
-   bikin file-tracing/watcher memindai direktori lain. Fix: set `turbopack.root` di
-   next config, atau hapus lockfile `/home/grego/package-lock.json` yang tidak dipakai.
-3. Identitas git commit ini memakai global `Horawas <Horawas@users.noreply.github.com>`.
-   Repo ini punya override lokal `ShaikhWarsi` yang menimpanya — putuskan apakah override
-   itu masih downregulated.
+
+## Handoff 2026-09-26 (lanjutan) — dua item menggantung SELESAI
+
+1. **Warning `turbopack.root` — SELESAI.** `next build` sebelumnya menebak workspace root
+   = `/home/grego` karena ada `/home/grego/package-lock.json` (milik install
+   typescript-language-server, bukan milik app ini). `website/next.config.ts` kini set
+   `turbopack: { root: path.join(__dirname) }`. Warning hilang, resolusi Turbopack tidak
+   lagi keluar dari direktori app. File `/home/grego/package-lock.json` SENGAJA tidak
+   dihapus — itu dependency clangd/TS-LSP yang masih dipakai.
+   Verifikasi: build exit 0 (14 route) tanpa warning, `tsc --noEmit` exit 0, `eslint` exit 0.
+   Commit `e1a4a8a`, sudah dipush ke `myfork`.
+
+2. **Override `user.name=ShaikhWarsi` — SELESAI.** Override repo-local di
+   `free-ai-tools/.git/config` dihapus; identity efektif sekarang global
+   `Horawas <Horawas@users.noreply.github.com>`. Jangan set ulang override — kalau butuh
+   identity lain, pakai `git -c user.name=... -c user.email=...` per-perintah.
+
+Catatan operasional: `next build` sempat GAGAL sekali dengan
+`Failed to fetch 'Geist' from Google Fonts`. Itu jaringan, bukan config — build berikutnya
+lolos tanpa perubahan. `next/font/google` butuh internet saat build; kalau sering gagal,
+pindah ke `next/font/local`.
